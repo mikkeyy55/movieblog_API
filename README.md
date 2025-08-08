@@ -87,13 +87,10 @@ A Laravel-based Movie Blog API with token authentication using Laravel Sanctum. 
 ### Comments System
 - Add comments to movies (authenticated users)
 - Update own comments (users)
-- Delete own comments (users)
-- Delete any comment (admin only)
 
 ### Rating System
 - Rate movies (1-5 stars, authenticated users)
 - Update own ratings
-- Delete own ratings
 - Prevent duplicate ratings per user per movie
 
 ### Watchlist & Favorites System (Users Only)
