@@ -20,7 +20,7 @@
                             <strong>Admin Only:</strong> This verification is for administrators only.
                         </div>
                     </div>
-                    
+
                     <div class="alert alert-info d-flex align-items-center mb-4">
                         <i class="fas fa-info-circle me-2"></i>
                         <div>
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hiddenEmail.value = userEmail;
         step1.style.display = 'none';
         step2.style.display = 'block';
-        
+
         // Show info that admin OTP has been sent
         showMessage('Admin OTP has been sent to your email address.', 'info');
     }
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show step 2 and indicate admin OTP was sent
         step1.style.display = 'none';
         step2.style.display = 'block';
-        
+
         showMessage('Admin OTP has been sent to your email address.', 'info');
     });
 
@@ -202,20 +202,20 @@ document.addEventListener('DOMContentLoaded', function() {
         existingAlerts.forEach(alert => alert.remove());
 
         // Create new alert
-        const alertClass = type === 'error' ? 'alert-danger' : 
-                          type === 'success' ? 'alert-success' : 
+        const alertClass = type === 'error' ? 'alert-danger' :
+                          type === 'success' ? 'alert-success' :
                           type === 'warning' ? 'alert-warning' : 'alert-info';
-        
+
         const alertHtml = `
             <div class="alert ${alertClass} temp-alert mt-3">
                 <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check' : 'info-circle'} me-2"></i>
                 ${message}
             </div>
         `;
-        
+
         const step2Element = document.getElementById('step2');
         step2Element.insertAdjacentHTML('beforeend', alertHtml);
-        
+
         // Remove alert after 5 seconds
         setTimeout(() => {
             const tempAlert = document.querySelector('.temp-alert');

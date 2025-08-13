@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $type === 'admin' ? 'Admin' : '' }} Verification Code - Movie Database</title>
+    <title>{{ $type === 'admin' ? 'Admin' : '' }} Verification Code - Movie Blog</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -27,7 +27,7 @@
             border-bottom: 2px solid #e9ecef;
         }
         .header h1 {
-            color: {{ $type === 'admin' ? '#dc3545' : '#007bff' }};
+            color: #ff6b35;
             margin: 0;
             font-size: 28px;
         }
@@ -40,14 +40,14 @@
             text-align: center;
             margin: 30px 0;
             padding: 25px;
-            background-color: {{ $type === 'admin' ? '#f8d7da' : '#d1ecf1' }};
+            background-color: #fff3e0;
             border-radius: 8px;
-            border-left: 4px solid {{ $type === 'admin' ? '#dc3545' : '#007bff' }};
+            border-left: 4px solid #ff6b35;
         }
         .otp-code {
             font-size: 36px;
             font-weight: bold;
-            color: {{ $type === 'admin' ? '#721c24' : '#004085' }};
+            color: #ff6b35;
             letter-spacing: 8px;
             margin: 15px 0;
             font-family: 'Courier New', monospace;
@@ -94,13 +94,13 @@
                 @endif
             </div>
             <h1>{{ $type === 'admin' ? 'Admin' : '' }} Verification Code</h1>
-            <p>Movie Database {{ $type === 'admin' ? 'Administration' : 'Authentication' }}</p>
+            <p>Movie Blog {{ $type === 'admin' ? 'Administration' : 'Authentication' }}</p>
         </div>
 
         <div class="content">
             <p>Hello,</p>
 
-            <p>You have requested to {{ $type === 'admin' ? 'access the admin panel' : 'log in to your account' }} for Movie Database. Please use the verification code below to complete your {{ $type === 'admin' ? 'admin login' : 'login' }}:</p>
+            <p>You have requested to {{ $type === 'admin' ? 'access the admin panel' : 'log in to your account' }} for Movie Blog. Please use the verification code below to complete your {{ $type === 'admin' ? 'admin login' : 'login' }}:</p>
         </div>
 
         <div class="otp-container">
@@ -131,11 +131,11 @@
 
         <div class="footer">
             <p>
-                <strong>Movie Database</strong><br>
+                <strong>Movie Blog</strong><br>
                 This is an automated message, please do not reply to this email.
             </p>
             <p style="margin-top: 15px; font-size: 12px;">
-                © {{ date('Y') }} Movie Database. All rights reserved.
+                © {{ date('Y') }} Movie Blog. All rights reserved.
             </p>
         </div>
     </div>

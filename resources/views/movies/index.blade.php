@@ -6,7 +6,7 @@
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container text-center">
-        <h1 class="display-4 fw-bold">
+    	<h1 class="display-4 fw-bold text-white">
             <i class="fas fa-film me-3"></i>Discover Amazing Movies
         </h1>
         <p class="lead">Explore our curated collection of movies, rate them, and share your thoughts!</p>
@@ -112,23 +112,23 @@
         <div class="col-12">
             <div class="d-flex flex-wrap gap-2">
                 <a href="{{ route('movies.index') }}?sort_by=rating"
-                   class="btn btn-outline-warning btn-sm {{ request('sort_by') == 'rating' ? 'active' : '' }}">
+                   class="btn btn-outline-warning btn-sm rounded-pill border-2 px-4 {{ request('sort_by') == 'rating' ? 'active' : '' }}">
                     <i class="fas fa-star me-1"></i>Top Rated
                 </a>
                 <a href="{{ route('movies.index') }}?sort_by=created_at"
-                   class="btn btn-outline-info btn-sm {{ request('sort_by') == 'created_at' ? 'active' : '' }}">
+                   class="btn btn-outline-info btn-sm rounded-pill border-2 px-4 {{ request('sort_by') == 'created_at' ? 'active' : '' }}">
                     <i class="fas fa-clock me-1"></i>Latest
                 </a>
                 <a href="{{ route('movies.index') }}?genre=Action"
-                   class="btn btn-outline-danger btn-sm {{ request('genre') == 'Action' ? 'active' : '' }}">
+                   class="btn btn-outline-danger btn-sm rounded-pill border-2 px-4 {{ request('genre') == 'Action' ? 'active' : '' }}">
                     <i class="fas fa-fist-raised me-1"></i>Action
                 </a>
                 <a href="{{ route('movies.index') }}?genre=Comedy"
-                   class="btn btn-outline-success btn-sm {{ request('genre') == 'Comedy' ? 'active' : '' }}">
+                   class="btn btn-outline-success btn-sm rounded-pill border-2 px-4 {{ request('genre') == 'Comedy' ? 'active' : '' }}">
                     <i class="fas fa-laugh me-1"></i>Comedy
                 </a>
                 <a href="{{ route('movies.index') }}?genre=Horror"
-                   class="btn btn-outline-dark btn-sm {{ request('genre') == 'Horror' ? 'active' : '' }}">
+                   class="btn btn-outline-light btn-sm {{ request('genre') == 'Horror' ? 'active' : '' }}">
                     <i class="fas fa-ghost me-1"></i>Horror
                 </a>
             </div>
@@ -171,10 +171,19 @@
                                 </span>
                             </div>
 
+                            <!-- Video Indicator -->
+                            @if($movie->video_path)
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-success bg-opacity-75 fs-6">
+                                        <i class="fas fa-play me-1"></i>Video
+                                    </span>
+                                </div>
+                            @endif
+
                             <!-- Watchlist/Favorite Buttons -->
                             @auth
                                 @if(!Auth::user()->isAdmin())
-                                    <div class="position-absolute top-0 start-0 m-2">
+                                    <div class="position-absolute bottom-0 start-0 m-2">
                                         <div class="btn-group-vertical">
                                             <form action="{{ route('watchlist.toggle') }}" method="POST" class="d-inline">
                                                 @csrf

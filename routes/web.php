@@ -23,7 +23,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 Route::get('/movies', [WebController::class, 'index'])->name('movies.index');
-Route::get('/movies/{id}', [WebController::class, 'show'])->name('movies.show');
 
 // Authentication routes
 Route::get('/login', [WebController::class, 'showLogin'])->name('login');
@@ -58,6 +57,7 @@ Route::middleware('auth')->group(function () {
     // Movie management (Admin only)
     Route::get('/movies/create', [WebController::class, 'create'])->name('movies.create');
     Route::post('/movies', [WebController::class, 'store'])->name('movies.store');
+    Route::get('/movies/{id}', [WebController::class, 'show'])->name('movies.show');
     Route::get('/movies/{id}/edit', [WebController::class, 'edit'])->name('movies.edit');
     Route::put('/movies/{id}', [WebController::class, 'update'])->name('movies.update');
     Route::delete('/movies/{id}', [WebController::class, 'destroy'])->name('movies.destroy');

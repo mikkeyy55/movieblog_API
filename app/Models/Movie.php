@@ -15,6 +15,7 @@ class Movie extends Model
         'description',
         'release_year',
         'cover_image',
+        'video_path',
         'created_by',
     ];
 

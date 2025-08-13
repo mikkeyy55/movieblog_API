@@ -34,16 +34,20 @@ class OtpController extends Controller
             ], 404);
         }
 
-        // Generate OTP
-        $otp = $this->otpService->generateOtp($request->email);
+        try {
+            // Send OTP via email
+            $this->otpService->sendOtp($request->email, 'user');
 
-        // For demo purposes, we'll return the OTP in response
-        // In production, you would send this via email
-        return response()->json([
-            'message' => 'OTP sent successfully',
-            'otp' => $otp->otp, // Remove this in production
-            'expires_in' => 10 // minutes
-        ]);
+            return response()->json([
+                'message' => 'OTP sent successfully to your email',
+                'expires_in' => 10 // minutes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to send OTP. Please try again.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
     }
 
     /**
@@ -99,15 +103,20 @@ class OtpController extends Controller
             ], 403);
         }
 
-        // Generate OTP
-        $otp = $this->otpService->generateOtp($request->email);
+        try {
+            // Send OTP via email
+            $this->otpService->sendOtp($request->email, 'admin');
 
-        // For demo purposes, we'll return the OTP in response
-        return response()->json([
-            'message' => 'Admin OTP sent successfully',
-            'otp' => $otp->otp, // Remove this in production
-            'expires_in' => 10 // minutes
-        ]);
+            return response()->json([
+                'message' => 'Admin OTP sent successfully to your email',
+                'expires_in' => 10 // minutes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to send admin OTP. Please try again.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
     }
 
     /**
