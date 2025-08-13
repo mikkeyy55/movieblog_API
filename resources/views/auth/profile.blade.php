@@ -21,10 +21,7 @@
                         <span class="badge bg-danger fs-6">
                             <i class="fas fa-crown me-1"></i>Administrator
                         </span>
-                    @else
-                        <span class="badge bg-primary fs-6">
-                            <i class="fas fa-user me-1"></i>User
-                        </span>
+
                     @endif
                     <div class="mt-3">
                         <small class="text-muted">
