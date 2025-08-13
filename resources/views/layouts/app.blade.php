@@ -101,15 +101,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
-                                @if(Auth::user()->isAdmin())
-                                    <span class="badge bg-danger ms-1">
-                                        <i class="fas fa-crown me-1"></i>Admin
-                                    </span>
-                                @else
-                                    <span class="badge bg-primary ms-1">
-                                        <i class="fas fa-user me-1"></i>User
-                                    </span>
-                                @endif
+
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('profile') }}">
