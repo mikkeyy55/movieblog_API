@@ -31,8 +31,8 @@ class OtpMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = $this->type === 'admin'
-            ? 'Admin Login Verification Code - Movie Database'
-            : 'Login Verification Code - Movie Database';
+            ? 'Admin Login Verification Code - Movie Blog'
+            : 'Login Verification Code - Movie Blog';
 
         return new Envelope(
             subject: $subject,

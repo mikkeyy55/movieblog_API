@@ -13,7 +13,7 @@
                     </h4>
                 </div>
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('movies.update', $movie->id) }}">
+                    <form method="POST" action="{{ route('movies.update', $movie->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -51,6 +51,24 @@
                             @enderror
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="release_year" class="form-label">Release Year</label>
+                                    <input id="release_year" type="number"
+                                           class="form-control @error('release_year') is-invalid @enderror"
+                                           name="release_year" value="{{ old('release_year', $movie->release_year) }}"
+                                           min="1900" max="{{ date('Y') + 5 }}"
+                                           placeholder="e.g., {{ date('Y') }}">
+                                    @error('release_year')
+                                        <div class="invalid-feedback">
+                                            <strong>{{ $message }}</strong>
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
                             <textarea id="description" class="form-control @error('description') is-invalid @enderror"
@@ -64,18 +82,17 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="cover_image" class="form-label">Cover Image URL</label>
-                            <input id="cover_image" type="url"
+                            <label for="cover_image" class="form-label">Cover Image</label>
+                            <input id="cover_image" type="file"
                                    class="form-control @error('cover_image') is-invalid @enderror"
-                                   name="cover_image" value="{{ old('cover_image', $movie->cover_image) }}"
-                                   placeholder="https://example.com/movie-poster.jpg">
+                                   name="cover_image" accept="image/*">
                             @error('cover_image')
                                 <div class="invalid-feedback">
                                     <strong>{{ $message }}</strong>
                                 </div>
                             @enderror
                             <div class="form-text">
-                                Optional: Provide a URL to the movie poster image.
+                                Optional: Upload a new movie poster image (JPEG, PNG, JPG, GIF, max 2MB).
                             </div>
                         </div>
 
@@ -86,6 +103,37 @@
                                 <div class="text-center">
                                     <img src="{{ $movie->cover_image }}" alt="{{ $movie->title }}"
                                          class="img-thumbnail" style="max-height: 200px;">
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="mb-4">
+                            <label for="video" class="form-label">Movie Video</label>
+                            <input id="video" type="file"
+                                   class="form-control @error('video') is-invalid @enderror"
+                                   name="video" accept="video/*">
+                            @error('video')
+                                <div class="invalid-feedback">
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @enderror
+                            <div class="form-text">
+                                Optional: Upload a new movie video file (MP4, AVI, MOV, WMV, FLV, max 100MB).
+                            </div>
+                        </div>
+
+                        <!-- Current Video Preview -->
+                        @if($movie->video_path)
+                            <div class="mb-4">
+                                <label class="form-label">Current Video:</label>
+                                <div class="text-center">
+                                    <video controls style="max-width: 100%; max-height: 300px;">
+                                        <source src="{{ $movie->video_path }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <div class="mt-2">
+                                        <small class="text-muted">Current video: {{ basename($movie->video_path) }}</small>
+                                    </div>
                                 </div>
                             </div>
                         @endif

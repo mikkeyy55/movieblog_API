@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Welcome to Movie Database')
+@section('title', 'Welcome to Movie Blog')
 
 @section('content')
 <div class="hero-section">
-    <div class="container text-center">
-        <h1 class="display-2 fw-bold mb-4">
-            <i class="fas fa-film me-3"></i>Movie Blogs
-        </h1>
-        <p class="lead fs-4 mb-4">Discover, rate, and discuss your favorite movies with fellow film enthusiasts</p>
+    <div class="container text-center position-relative">
+        <div class="logo-container justify-content-center mb-4">
+            <img src="{{ asset('storage/picture/logo.png') }}" alt="Movie Blog Logo" class="hero-logo">
+        </div>
+        <h2 class="display-4 fw-bold mb-4 text-white">Welcome to Movie Blog</h2>
+        <p class="lead fs-4 mb-4 text-white">Discover, rate, and discuss your favorite movies with fellow film enthusiasts</p>
 
         @guest
             <div class="d-flex justify-content-center gap-3">
@@ -39,27 +40,33 @@
         <div class="col-lg-4 mb-4">
             <div class="card h-100 text-center">
                 <div class="card-body">
-                    <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                    <div class="mb-3">
+                        <i class="fas fa-star fa-3x" style="background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                    </div>
                     <h4 class="fw-bold">Rate Movies</h4>
                     <p class="text-muted">Share your opinions by rating movies from 1 to 5 stars and help others discover great films.</p>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="col-lg-4 mb-4">
             <div class="card h-100 text-center">
                 <div class="card-body">
-                    <i class="fas fa-comments fa-3x text-primary mb-3"></i>
+                    <div class="mb-3">
+                        <i class="fas fa-comments fa-3x" style="background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                    </div>
                     <h4 class="fw-bold">Join Discussions</h4>
                     <p class="text-muted">Engage with the community by leaving thoughtful comments and reviews on your favorite movies.</p>
                 </div>
             </div>
-                    </div>
+        </div>
 
         <div class="col-lg-4 mb-4">
             <div class="card h-100 text-center">
                 <div class="card-body">
-                    <i class="fas fa-search fa-3x text-success mb-3"></i>
+                    <div class="mb-3">
+                        <i class="fas fa-search fa-3x" style="background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                    </div>
                     <h4 class="fw-bold">Discover Films</h4>
                     <p class="text-muted">Explore our curated collection of movies across various genres and find your next favorite film.</p>
                 </div>

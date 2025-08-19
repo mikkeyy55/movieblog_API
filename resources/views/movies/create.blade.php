@@ -13,7 +13,7 @@
                     </h4>
                 </div>
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('movies.store') }}" id="movieForm">
+                    <form method="POST" action="{{ route('movies.store') }}" id="movieForm" enctype="multipart/form-data">
                         @csrf
 
                         <div class="mb-3">
@@ -106,18 +106,32 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="cover_image" class="form-label">Cover Image URL</label>
-                            <input id="cover_image" type="url"
+                            <label for="cover_image" class="form-label">Cover Image</label>
+                            <input id="cover_image" type="file"
                                    class="form-control @error('cover_image') is-invalid @enderror"
-                                   name="cover_image" value="{{ old('cover_image') }}"
-                                   placeholder="https://example.com/movie-poster.jpg">
+                                   name="cover_image" accept="image/*">
                             @error('cover_image')
                                 <div class="invalid-feedback">
                                     <strong>{{ $message }}</strong>
                                 </div>
                             @enderror
                             <div class="form-text">
-                                Optional: Provide a URL to the movie poster image.
+                                Optional: Upload a movie poster image (JPEG, PNG, JPG, GIF, max 2MB).
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="video" class="form-label">Movie Video</label>
+                            <input id="video" type="file"
+                                   class="form-control @error('video') is-invalid @enderror"
+                                   name="video" accept="video/*">
+                            @error('video')
+                                <div class="invalid-feedback">
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @enderror
+                            <div class="form-text">
+                                Optional: Upload the movie video file (MP4, AVI, MOV, WMV, FLV, max 100MB).
                             </div>
                         </div>
 

@@ -284,17 +284,38 @@ class WebController extends Controller
             'genre' => 'required|string|max:100',
             'description' => 'required|string|min:10',
             'release_year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
-            'cover_image' => 'nullable|url|max:500',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'video' => 'nullable|mimes:mp4,avi,mov,wmv,flv|max:102400',
             'tags' => 'nullable|string|max:500',
         ]);
 
         try {
+            $coverImagePath = null;
+            $videoPath = null;
+
+            // Handle cover image upload
+            if ($request->hasFile('cover_image')) {
+                $coverImage = $request->file('cover_image');
+                $coverImageName = time() . '_' . $coverImage->getClientOriginalName();
+                $coverImagePath = $coverImage->storeAs('public/movies/covers', $coverImageName);
+                $coverImagePath = str_replace('public/', 'storage/', $coverImagePath);
+            }
+
+            // Handle video upload
+            if ($request->hasFile('video')) {
+                $video = $request->file('video');
+                $videoName = time() . '_' . $video->getClientOriginalName();
+                $videoPath = $video->storeAs('public/movies/videos', $videoName);
+                $videoPath = str_replace('public/', 'storage/', $videoPath);
+            }
+
             $movie = Movie::create([
                 'title' => $request->title,
                 'genre' => $request->genre,
                 'description' => $request->description,
                 'release_year' => $request->release_year,
-                'cover_image' => $request->cover_image,
+                'cover_image' => $coverImagePath,
+                'video_path' => $videoPath,
                 'created_by' => Auth::id(),
             ]);
 
@@ -347,13 +368,32 @@ class WebController extends Controller
             'genre' => 'required|string|max:100',
             'description' => 'required|string|min:10',
             'release_year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
-            'cover_image' => 'nullable|url|max:500',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'video' => 'nullable|mimes:mp4,avi,mov,wmv,flv|max:102400',
         ]);
 
         try {
-            $movie->update($request->only([
-                'title', 'genre', 'description', 'release_year', 'cover_image'
-            ]));
+            $updateData = $request->only([
+                'title', 'genre', 'description', 'release_year'
+            ]);
+
+            // Handle cover image upload
+            if ($request->hasFile('cover_image')) {
+                $coverImage = $request->file('cover_image');
+                $coverImageName = time() . '_' . $coverImage->getClientOriginalName();
+                $coverImagePath = $coverImage->storeAs('public/movies/covers', $coverImageName);
+                $updateData['cover_image'] = str_replace('public/', 'storage/', $coverImagePath);
+            }
+
+            // Handle video upload
+            if ($request->hasFile('video')) {
+                $video = $request->file('video');
+                $videoName = time() . '_' . $video->getClientOriginalName();
+                $videoPath = $video->storeAs('public/movies/videos', $videoName);
+                $updateData['video_path'] = str_replace('public/', 'storage/', $videoPath);
+            }
+
+            $movie->update($updateData);
 
             return redirect()->route('movies.show', $movie->id)
                 ->with('success', 'Movie "' . $movie->title . '" updated successfully!');

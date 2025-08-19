@@ -4,60 +4,257 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Movie Database')</title>
+    <title>@yield('title', 'Movie Blog')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .movie-card {
-            transition: transform 0.2s;
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        /* Movie Blog - Custom Color Scheme */
+        :root {
+            --primary-orange: #ff6b35;
+            --primary-pink: #f7931e;
+            --gradient-orange: #ff6b35;
+            --gradient-pink: #f7931e;
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text-light: #ffffff;
+            --text-muted: #b8b8b8;
+            --accent-orange: #ff8c42;
+            --accent-pink: #ff6b9d;
         }
-        .movie-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+        /* Global Styles */
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .movie-poster {
-            height: 300px;
-            object-fit: cover;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        /* Titles: orange */
+        h1, h2, h3, h4, h5, h6,
+        .display-1, .display-2, .display-3, .display-4, .display-5, .display-6,
+        .card-header h5, .section-title {
+            color: var(--primary-orange) !important;
         }
-        .rating-stars {
-            color: #ffc107;
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%) !important;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
         }
-        .rating-form .btn-star {
-            background: none;
-            border: none;
-            color: #ddd;
-            font-size: 1.5rem;
-            padding: 2px;
-        }
-        .rating-form .btn-star:hover,
-        .rating-form .btn-star.active {
-            color: #ffc107;
-        }
+
         .navbar-brand {
             font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--text-light) !important;
         }
+
+        .navbar-nav .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--text-light) !important;
+            opacity: 0.8;
+        }
+
+        /* Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-image {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-logo {
+            height: 150px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+            margin-bottom: 20px;
+        }
+
+        /* Responsive logo sizing */
+        @media (max-width: 768px) {
+            .logo-image {
+                height: 40px;
+            }
+
+            .hero-logo {
+                height: 120px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .logo-image {
+                height: 35px;
+            }
+
+            .hero-logo {
+                height: 100px;
+            }
+        }
+
+        /* Hero Section */
         .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%);
+            color: var(--text-light);
             padding: 4rem 0;
             margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
         }
-        .comment-card {
-            border-left: 4px solid #007bff;
-            margin-bottom: 1rem;
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="film" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/><rect x="8" y="0" width="4" height="20" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23film)"/></svg>');
+            opacity: 0.3;
         }
+
+
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-outline-light {
+            border: 2px solid var(--text-light);
+            color: var(--text-light);
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-light:hover {
+            background: var(--text-light);
+            color: var(--gradient-orange);
+        }
+
+        .btn-light {
+            background: var(--text-light);
+            color: var(--gradient-orange);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-light:hover {
+            background: var(--text-light);
+            color: var(--gradient-pink);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%) !important;
+            color: var(--text-light);
+        }
+
+        /* Dropdown */
+        .dropdown-menu {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown-item {
+            color: var(--text-light);
+            border-radius: 10px;
+            margin: 2px 8px;
+            padding: 8px 15px;
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, var(--gradient-orange) 0%, var(--gradient-pink) 100%);
+            color: var(--text-light);
+        }
+
+        /* Additional text color overrides */
+        .text-white { color: var(--text-light) !important; }
+        .text-dark { color: var(--text-light) !important; }
+
+        /* High-contrast defaults on dark background */
+        body, p, small, span, li, label, .form-text, .list-group-item, dt, dd {
+            color: var(--text-light) !important;
+        }
+
+        /* Make muted/secondary utilities readable */
+        .text-muted,
+        .text-secondary,
+        .text-body-secondary,
+        .text-white-50,
+        .text-black-50,
+        .text-body,
+        .card .text-muted,
+        .card .text-body-secondary {
+            color: rgba(255, 255, 255, 0.82) !important;
+        }
+
+        /* Link color on dark */
+        a { color: #ff9f6b; }
+        a:hover { color: #ffb98f; }
+
+        /* Ensure all layout containers inherit readable text */
+        .container, .row, .col, .col-md, .col-lg { color: var(--text-light) !important; }
+
+        /* Text selection: white background with black text */
+        ::selection { background: #ffffff; color: #000000; }
+        ::-moz-selection { background: #ffffff; color: #000000; }
     </style>
     @yield('extra-css')
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent">
         <div class="container">
-            <a class="navbar-brand" >
-                <i class="fas fa-film me-2"></i>Movie Blogs
+                        <a class="navbar-brand" href="{{ route('welcome') }}">
+                <div class="logo-container">
+                    <img src="{{ asset('storage/picture/logo.png') }}" alt="Movie Blog Logo" class="logo-image">
+                </div>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -101,15 +298,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
-                                @if(Auth::user()->isAdmin())
-                                    <span class="badge bg-danger ms-1">
-                                        <i class="fas fa-crown me-1"></i>Admin
-                                    </span>
-                                @else
-                                    <span class="badge bg-primary ms-1">
-                                        <i class="fas fa-user me-1"></i>User
-                                    </span>
-                                @endif
+
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('profile') }}">
@@ -169,9 +358,9 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light py-4 mt-5">
+    <footer class="py-4 mt-5">
         <div class="container text-center">
-            <p class="mb-0">&copy; {{ date('Y') }} Movie Blogs. Built with Laravel & Bootstrap.</p>
+            <p class="mb-0">&copy; {{ date('Y') }} Movie Blog. Built with Laravel & Bootstrap.</p>
         </div>
     </footer>
 

@@ -14,6 +14,19 @@
                     <i class="fas fa-film fa-5x text-white opacity-50"></i>
                 </div>
             @endif
+
+            <!-- Video Player -->
+            @if($movie->video_path)
+                <div class="mt-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-play-circle me-2"></i>Watch Movie
+                    </h5>
+                    <video controls class="w-100 rounded shadow" style="max-height: 300px;">
+                        <source src="{{ $movie->video_path }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            @endif
         </div>
 
         <div class="col-lg-8">
