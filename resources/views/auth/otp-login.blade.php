@@ -113,16 +113,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     emailForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        userEmail = document.getElementById('email').value;
-        hiddenEmail.value = userEmail;
+    e.preventDefault();
+    userEmail = document.getElementById('email').value;
+    hiddenEmail.value = userEmail;
 
-        // Show step 2 and indicate OTP was sent
-        step1.style.display = 'none';
-        step2.style.display = 'block';
+    // Disable button during request
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
 
-        showMessage('OTP has been sent to your email address.', 'info');
+    fetch('{{ route("send.otp") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            email: userEmail
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'OTP sent successfully') {
+            // Show step 2
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+            showMessage('OTP has been sent to your email address.', 'success');
+            
+            // For development - show OTP in console
+            if (data.otp) {
+                console.log('Development OTP:', data.otp);
+                showMessage('Development OTP: ' + data.otp + ' (Check console)', 'warning');
+            }
+        } else {
+            showMessage('Failed to send OTP. Please try again.', 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('An error occurred. Please try again.', 'error');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Send OTP';
     });
+});
 
     resendBtn.addEventListener('click', function() {
         if (!userEmail) return;

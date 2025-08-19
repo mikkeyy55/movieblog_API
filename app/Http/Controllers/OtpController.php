@@ -21,66 +21,68 @@ class OtpController extends Controller
      * Send OTP for login
      */
     public function sendOtp(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+    ]);
 
-        $user = User::where('email', $request->email)->first();
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
-        }
-
-        // Generate OTP
-        $otp = $this->otpService->generateOtp($request->email);
-
-        // For demo purposes, we'll return the OTP in response
-        // In production, you would send this via email
+    if (!$user) {
         return response()->json([
-            'message' => 'OTP sent successfully',
-            'otp' => $otp->otp, // Remove this in production
-            'expires_in' => 10 // minutes
-        ]);
+            'message' => 'User not found'
+        ], 404);
     }
 
-    /**
-     * Verify OTP and login
-     */
-    public function verifyOtp(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'otp' => 'required|string|size:6',
-        ]);
+    // Generate and send OTP
+    $otp = $this->otpService->sendOtp($request->email);
+    
+    // For development, return OTP in response
+    return response()->json([
+        'message' => 'OTP sent successfully',
+        'otp' => $otp, // Remove this in production
+        'expires_in' => 10 // minutes
+    ]);
+}
 
-        $user = User::where('email', $request->email)->first();
+public function verifyOtp(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'otp' => 'required|string|size:6',
+    ]);
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
-        }
+    $user = User::where('email', $request->email)->first();
 
-        // Verify OTP
-        if (!$this->otpService->verifyOtp($request->email, $request->otp)) {
-            return response()->json([
-                'message' => 'Invalid or expired OTP'
-            ], 400);
-        }
+    if (!$user) {
+        return response()->json([
+            'message' => 'User not found'
+        ], 404);
+    }
 
-        // Login user
-        Auth::login($user);
+    // Verify OTP
+    if (!$this->otpService->verifyOtp($request->email, $request->otp)) {
+        return response()->json([
+            'message' => 'Invalid or expired OTP'
+        ], 400);
+    }
+
+    // Login user
+    Auth::login($user);
+    
+    // For API
+    if ($request->wantsJson()) {
         $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'message' => 'Login successful',
             'user' => $user,
             'token' => $token,
         ]);
     }
+    
+    // For web
+    return redirect()->intended('/')->with('success', 'Logged in successfully');
+}
 
     /**
      * Send OTP for admin login

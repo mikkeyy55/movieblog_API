@@ -3,59 +3,70 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Models\Otp;
+use App\Mail\SendOtpMail;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+
+
 
 class AuthController extends Controller
 {
     /**
      * Register a new user
      */
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+    
+public function register(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'user', // Default role
-        ]);
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'user',
+        'is_verified' => false,
+    ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+    // Use OtpService instead of direct Otp model
+    $otpService = app(OtpService::class);
+    $otp = $otpService->sendOtp($request->email);
 
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
+    return redirect()->route('verify.otp.form')
+                   ->with('email', $user->email)
+                   ->with('success', 'A verification code has been sent to your email.');
+}
 
     /**
      * Login user
      */
     public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    if (!Auth::attempt($request->only('email', 'password'))) {
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
         ]);
+    }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
+    $user = User::where('email', $request->email)->firstOrFail();
 
-        $user = User::where('email', $request->email)->firstOrFail();
+    // For API requests
+    if ($request->wantsJson()) {
         $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'message' => 'Login successful',
             'user' => $user,
@@ -63,17 +74,22 @@ class AuthController extends Controller
         ]);
     }
 
+    // For web requests
+    $request->session()->regenerate();
+    return redirect()->intended('/')->with('success', 'Logged in successfully');
+}
     /**
      * Logout user
      */
     public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json([
-            'message' => 'Logged out successfully'
-        ]);
-    }
+{
+    Auth::logout();
+    
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    
+    return redirect('/')->with('status', 'You have been logged out.');
+}
 
     /**
      * Get authenticated user profile
@@ -165,4 +181,102 @@ class AuthController extends Controller
             'users' => $users
         ]);
     }
+
+    public function showVerifyOtpForm()
+{
+    return view('auth.otp-login')->with('email', session('email'));
 }
+
+// public function verifyOtp(Request $request)
+// {
+//     $request->validate([
+//         'email' => 'required|email',
+//         'otp' => 'required|numeric',
+//     ]);
+
+//     $user = User::where('email', $request->email)->firstOrFail();
+    
+//     $otpService = app(OtpService::class);
+//     if (!$otpService->verifyOtp($request->email, $request->otp)) {
+//         return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+//     }
+
+//     $user->is_verified = true;
+//     $user->save();
+
+//     Auth::login($user);
+
+//     return redirect('/')->with('success', 'Your account has been verified and you are now logged in.');
+// }
+
+public function verifyOtp(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'otp' => 'required|numeric',
+    ]);
+
+    // Log the incoming request
+    \Log::info("OTP Verification Attempt", [
+        'email' => $request->email,
+        'otp' => $request->otp,
+        'ip' => $request->ip(),
+        'user_agent' => $request->userAgent()
+    ]);
+
+    $user = User::where('email', $request->email)->firstOrFail();
+    $otpService = app(OtpService::class);
+
+    // Debugging: Check if OTP exists before verification
+    \Log::debug("Pre-verification check", [
+        'has_otp' => $otpService->hasOtp($request->email),
+        'remaining_attempts' => $otpService->getRemainingAttempts($request->email)
+    ]);
+
+    if (!$otpService->verifyOtp($request->email, $request->otp)) {
+        \Log::warning("OTP Verification Failed", [
+            'email' => $request->email,
+            'remaining_attempts' => $otpService->getRemainingAttempts($request->email)
+        ]);
+        return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+    }
+
+    \Log::info("OTP Verification Successful", [
+        'user_id' => $user->id,
+        'email' => $user->email
+    ]);
+
+    $user->is_verified = true;
+    $user->save();
+
+    Auth::login($user);
+
+    return redirect('/')->with('success', 'Your account has been verified and you are now logged in.');
+}
+
+/**
+ * Logout user from web session
+ */
+/**
+ * Logout user from web session
+ */
+public function webLogout(Request $request)
+{
+    // Check if user is authenticated via API (has tokens)
+    if ($request->user() && $request->user()->currentAccessToken()) {
+        $request->user()->currentAccessToken()->delete();
+    }
+    
+    // Logout from session
+    Auth::logout();
+    
+    // Invalidate session
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    
+    return redirect('/')->with('success', 'Logged out successfully');
+}
+
+}
+
+

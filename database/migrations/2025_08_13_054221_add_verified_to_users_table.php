@@ -9,14 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
+    public function up()
 {
-    Schema::create('otps', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->string('code');
-        $table->timestamp('expires_at');
-        $table->timestamps();
+    Schema::table('users', function (Blueprint $table) {
+        $table->boolean('is_verified')->default(false);
     });
 }
 
@@ -26,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('otps');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

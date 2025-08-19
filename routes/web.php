@@ -4,20 +4,21 @@ use App\Http\Controllers\WebController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController; // Added this for OTP registration
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OtpController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
+// OTP verification routes
+Route::post('/send-otp', [OtpController::class, 'sendOtp'])->name('send.otp');
+Route::get('/verify-otp', [AuthController::class, 'showVerifyOtpForm'])->name('verify.otp.form');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
 // Public routes
 Route::get('/', function () {
     return view('welcome');
@@ -26,21 +27,23 @@ Route::get('/movies', [WebController::class, 'index'])->name('movies.index');
 Route::get('/movies/{id}', [WebController::class, 'show'])->name('movies.show');
 
 // Authentication routes
+
 Route::get('/login', [WebController::class, 'showLogin'])->name('login');
 Route::post('/login', [WebController::class, 'login']);
-Route::post('/verify-otp', [WebController::class, 'verifyOtp'])->name('verify.otp');
-Route::post('/resend-otp', [WebController::class, 'resendOtp'])->name('resend.otp');
+Route::post('/resend-otp', [OtpController::class, 'resendOtp'])->name('resend.otp');
+// Registration routes — fixed to use AuthController for OTP
 Route::get('/register', [WebController::class, 'showRegister'])->name('register');
-Route::post('/register', [WebController::class, 'register']);
-Route::post('/logout', [WebController::class, 'logout'])->name('logout');
+Route::post('/register', [AuthController::class, 'register']); // changed here
 
-// Admin routes
+Route::post('/logout', [AuthController::class, 'webLogout'])->name('logout');
+
+// Admin login routes
 Route::get('/admin', [WebController::class, 'showAdminLogin'])->name('admin.login');
 Route::post('/admin', [WebController::class, 'adminLogin'])->name('admin.login.post');
 Route::post('/verify-admin-otp', [WebController::class, 'verifyAdminOtp'])->name('verify.admin.otp');
 Route::post('/resend-admin-otp', [WebController::class, 'resendAdminOtp'])->name('resend.admin.otp');
 
-// OTP routes
+// OTP login views
 Route::get('/otp-login', function (Request $request) {
     $email = $request->get('email');
     return view('auth.otp-login', compact('email'));

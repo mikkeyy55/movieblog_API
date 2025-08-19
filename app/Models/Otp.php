@@ -10,16 +10,13 @@ class Otp extends Model
     use HasFactory;
 
     protected $fillable = [
-        'email',
-        'otp',
+        'user_id',
+        'code',
         'expires_at',
-        'used'
     ];
 
-    protected $casts = [
-        'expires_at' => 'datetime',
-        'used' => 'boolean'
-    ];
+    public $timestamps = true;
+
 
     /**
      * Check if OTP is expired

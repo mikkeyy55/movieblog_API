@@ -33,55 +33,69 @@ class OtpService
      * Verify OTP
      */
     public function verifyOtp(string $email, string $otp): bool
-    {
-        $key = $this->getCacheKey($email);
-        $data = Cache::get($key);
+{
+    $key = $this->getCacheKey($email);
+    
+    \Log::debug("OTP Verification Started", [
+        'email' => $email,
+        'cache_key' => $key
+    ]);
 
-        if (!$data) {
-            return false; // OTP not found or expired
-        }
+    $data = Cache::get($key);
 
-        // Check attempt limit (max 3 attempts)
-        if ($data['attempts'] >= 3) {
-            Cache::forget($key);
-            return false;
-        }
-
-        // Increment attempts
-        $data['attempts']++;
-        Cache::put($key, $data, now()->addMinutes(10));
-
-        if ($data['otp'] === $otp) {
-            // OTP is correct, remove from cache
-            Cache::forget($key);
-            return true;
-        }
-
+    if (!$data) {
+        \Log::debug("OTP Verification Failed - No OTP found or expired");
         return false;
     }
+
+    \Log::debug("Stored OTP Data", [
+        'stored_otp' => $data['otp'],
+        'attempts' => $data['attempts'],
+        'created_at' => $data['created_at']
+    ]);
+
+    if ($data['attempts'] >= 3) {
+        \Log::debug("OTP Verification Failed - Attempt limit reached");
+        Cache::forget($key);
+        return false;
+    }
+
+    $data['attempts']++;
+    Cache::put($key, $data, now()->addMinutes(10));
+
+    if ($data['otp'] === $otp) {
+        \Log::debug("OTP Verification Succeeded");
+        Cache::forget($key);
+        return true;
+    }
+
+    \Log::debug("OTP Verification Failed - OTP mismatch");
+    return false;
+}
 
     /**
      * Send OTP via email
      */
     public function sendOtp(string $email, string $type = 'user'): string
-    {
-        $otp = $this->generateOtp();
-        $this->storeOtp($email, $otp);
+{
+    $otp = $this->generateOtp();
+    $this->storeOtp($email, $otp);
 
-        try {
-            Mail::to($email)->send(new OtpMail($otp, $type));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send OTP email: ' . $e->getMessage());
-            // For demo purposes, we'll still return the OTP even if email fails
-        }
-
-        return $otp;
+    try {
+        Mail::to($email)->send(new OtpMail($otp, $type));
+        \Log::info("OTP sent to $email: $otp");
+    } catch (\Exception $e) {
+        \Log::error("Failed to send OTP to $email: " . $e->getMessage());
+        // Even if email fails, we'll proceed (for development)
     }
+
+    return $otp;
+}
 
     /**
      * Get cache key for email
      */
-    private function getCacheKey(string $email): string
+    public function getCacheKey(string $email): string
     {
         return 'otp_' . md5($email);
     }
